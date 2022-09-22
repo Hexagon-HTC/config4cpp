@@ -1426,6 +1426,34 @@ ConfigurationImpl::stringToFloat(
 }
 
 
+double
+ConfigurationImpl::stringToDouble(
+	const char *		scope,
+	const char *		localName,
+	const char *		str) const
+{
+	double				result;
+	char				dummy;
+	int					i;
+	StringBuffer		msg;
+	StringBuffer		fullyScopedName;
+	
+	//--------
+	// Convert the string value into a float value.
+	//--------
+	i = sscanf(str, "%lf%c", &result, &dummy);
+	if (i != 1) {
+		//--------
+		// The number is badly formatted. Report an error.
+		//--------
+		mergeNames(scope, localName, fullyScopedName);
+		msg << fileName() << ": non-numeric value for '" << fullyScopedName
+			<< "'";
+		throw ConfigurationException(msg.c_str());
+	}
+	return result;
+}
+
 
 bool
 ConfigurationImpl::isEnum(
@@ -2746,8 +2774,6 @@ ConfigurationImpl::lookupMemorySizeMB(
 	return result;
 }
 
-
-
 float
 ConfigurationImpl::lookupFloat(
 	const char *		scope,
@@ -2776,6 +2802,38 @@ ConfigurationImpl::lookupFloat(
 
 	strValue = lookupString(scope, localName);
 	result = stringToFloat(scope, localName, strValue);
+	return result;
+}
+
+
+double
+ConfigurationImpl::lookupDouble(
+	const char *		scope,
+	const char *		localName,
+	double				defaultVal) const
+{
+	const char *		strValue;
+	double				result;
+	char				defaultStrVal[64]; // Big enough
+
+	sprintf(defaultStrVal, "%lf", defaultVal);
+	strValue = lookupString(scope, localName, defaultStrVal);
+	result = stringToDouble(scope, localName, strValue);
+	return result;
+}
+
+
+
+double
+ConfigurationImpl::lookupDouble(
+	const char *		scope,
+	const char *		localName) const
+{
+	const char *		strValue;
+	double				result;
+
+	strValue = lookupString(scope, localName);
+	result = stringToDouble(scope, localName, strValue);
 	return result;
 }
 

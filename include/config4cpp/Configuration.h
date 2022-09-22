@@ -335,6 +335,14 @@ public:
 	virtual float lookupFloat(
 					const char *		scope,
 					const char *		localName) const = 0;
+	virtual double lookupDouble(
+					const char *		scope,
+					const char *		localName,
+					double				defaultVal) const = 0;
+	virtual double lookupDouble(
+					const char *		scope,
+					const char *		localName) const = 0;
+
 
 	virtual int lookupEnum(
 					const char *				scope,
