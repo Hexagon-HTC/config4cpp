@@ -199,6 +199,17 @@ StringBuffer::operator << (char ch)
 }
 
 
+inline StringBuffer &
+StringBuffer::append(char ch)
+{
+	growIfNeeded(1);
+	m_buf[m_currSize-1] = ch;
+	m_buf[m_currSize] = '\0';
+	m_currSize++;
+	return *this;
+}
+
+
 }; // namespace CONFIG4CPP_NAMESPACE
 #endif
 

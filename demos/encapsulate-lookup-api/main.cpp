@@ -124,11 +124,12 @@ usage()
 	    "  -h             Print this usage statement\n"
 	    "  -cfg <source>  Parse the specified configuration file\n"
 	    "  -scope <name>  Application scope in the configuration source\n"
-	    "\n",
+	    "\n"
 	    "A configuration <source> can be one of the following:\n"
 	    "  file.cfg       A configuration file\n"
 	    "  file#file.cfg  A configuration file\n"
-	    "  exec#<command> Output from executing the specified command\n\n");
+	    "  exec#<command> Output from executing the specified command\n\n"
+		);
 	exit(1);
 }
 

@@ -47,6 +47,6 @@ public:
 //--------
 // Singleton object
 //--------
-extern Logger log;
+extern Logger logger;
 
 #endif

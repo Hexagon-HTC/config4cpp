@@ -10,11 +10,15 @@ Compilation instructions
 ------------------------
 
 The build system has been tested on: (1) Linux with G++, (2) Cygwin with
-G++, and (3) Windows with Visual C++ 6.0.
+G++, and (3) Windows with Visual C++ 2013
 
-To build on Linux or Cygwin, run the following commands:
+To build on Linux or Cygwin, do the following:
+	1. If you are compiling on Linux, then add the config4cpp/lib
+	   directory into the LD_LIBRARY_PATH environment variable, so the
+	   shared library can be located.
 
-	make
+	2. Run "make" to build with optimization, or "make BUILD_TYPE=debug"
+	   for a debug build. I recommend building with optimization.
 
 To build on Windows with Visual C++, run the following commands:
 
@@ -29,4 +33,3 @@ Windows). You might also need to edit "src/platform.h" and
 
 Executables will be put into the "bin" directory, and library files will
 be put into the "lib" directory.
-

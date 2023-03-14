@@ -1,5 +1,6 @@
 PROJECT_ROOT=..
 include $(PROJECT_ROOT)/Makefile.inc
+LIB_CONFIG4CPP=libconfig4cpp.a
 
 PUB_INC_FILES= \
 		$(INC_DIR)/config4cpp/Configuration.h \
@@ -11,6 +12,7 @@ PUB_INC_FILES= \
 
 LIB_HDR_FILES	= \
 		$(PUB_INC_FILES) \
+		AsciiPatternMatch.h \
 		SchemaLex.h \
 		SchemaParser.h \
 		SchemaRuleInfo.h \
@@ -58,6 +60,7 @@ LIB_OBJ_FILES	= \
 		platform.o \
 		util.o \
 		Configuration.o \
+		AsciiPatternMatch.o \
 		DefaultSecurity.o \
 		DefaultSecurityConfiguration.o \
 		ConfigurationException.o \
@@ -102,6 +105,12 @@ $(LIB_CONFIG4CPP):	$(LIB_OBJ_FILES)
 	$(AR) $(AR_FLAGS) $(LIB_CONFIG4CPP) $(LIB_OBJ_FILES)
 	$(RANLIB) $(RANLIB_FLAGS) $(LIB_CONFIG4CPP)
 	cp $(LIB_CONFIG4CPP) $(LIB_DIR)
+ifneq ($(OS),Cygwin)
+	g++ $(CREATE_SHARED_LIB_FLAGS) \
+		-o libconfig4cpp$(SHARED_LIB_EXT) \
+		$(LIB_OBJ_FILES)
+	cp libconfig4cpp$(SHARED_LIB_EXT) $(LIB_DIR)
+endif
 
 DefaultSecurity.cpp DefaultSecurity.h: DefaultSecurity.cfg config2cpp-nocheck$(EXE_EXT)
 	./config2cpp-nocheck -cfg DefaultSecurity.cfg -class DefaultSecurity \
@@ -132,9 +141,16 @@ clean:
 	rm -f *.o config2cpp$(EXE_EXT) config4cpp$(EXE_EXT) core
 	rm -f config2cpp-nocheck$(EXE_EXT)
 	rm -f libconfig4cpp*.a
+ifneq ($(OS),Cygwin)
+	rm -f libconfig4cpp*$(SHARED_LIB_EXT)
+endif
 
 clobber: clean
 	rm -f $(BIN_DIR)/config2cpp$(EXE_EXT)
 	rm -f $(BIN_DIR)/config4cpp$(EXE_EXT)
 	rm -f $(LIB_DIR)/libconfig4cpp*.a
+	rm -f DefaultSecurity.cpp DefaultSecurity.h
+ifneq ($(OS),Cygwin)
+	rm -f $(LIB_DIR)/libconfig4cpp*$(SHARED_LIB_EXT)
+endif
 

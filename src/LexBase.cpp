@@ -133,7 +133,6 @@ LexBase::LexBase(
 	Configuration::SourceType	sourceType,
 	const char *				source,
 	UidIdentifierProcessor *	uidIdentifierProcessor)
-												throw(ConfigurationException)
 {
 	StringBuffer				msg;
 
@@ -188,7 +187,7 @@ LexBase::LexBase(
 // Description:
 //----------------------------------------------------------------------
 
-LexBase::LexBase(const char * str) throw(ConfigurationException)
+LexBase::LexBase(const char * str)
 {
 	StringBuffer			msg;
 
@@ -270,7 +269,7 @@ LexBase::nextByte()
 //----------------------------------------------------------------------
 
 void
-LexBase::nextChar() throw(ConfigurationException)
+LexBase::nextChar()
 {
 	char				ch;
 	int					status;
@@ -389,7 +388,12 @@ LexBase::nextToken(LexToken &token)
 		return;
 	case '+':
 		nextChar();
-		token.reset(LEX_PLUS_SYM, lineNum, "+");
+		if (m_ch == '=') {
+			nextChar();
+			token.reset(LEX_PLUS_EQUALS_SYM, lineNum, "+=");
+		} else {
+			token.reset(LEX_PLUS_SYM, lineNum, "+");
+		}
 		return;
 	case '&':
 		nextChar();

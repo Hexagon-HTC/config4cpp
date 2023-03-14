@@ -83,9 +83,8 @@ const static int funcInfoArraySize = sizeof(funcInfoArray) / sizeof(funcInfoArra
 ConfigLex::ConfigLex(
 	Configuration::SourceType	sourceType,
 	const char *				source,
-	UidIdentifierProcessor *	uidIdentifierProcessor)
-												throw(ConfigurationException)
-	: LexBase(sourceType, source, uidIdentifierProcessor)
+	UidIdentifierProcessor *	uidIdentifierProcessor) 
+		: LexBase(sourceType, source, uidIdentifierProcessor)
 {
 	m_keywordInfoArray     = keywordInfoArray;
 	m_keywordInfoArraySize = keywordInfoArraySize;

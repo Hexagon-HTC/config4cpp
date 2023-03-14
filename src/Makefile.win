@@ -11,6 +11,7 @@ PUB_INC_FILES= \
 
 LIB_HDR_FILES	= \
 		$(PUB_INC_FILES) \
+		AsciiPatternMatch.h \
 		SchemaLex.h \
 		SchemaParser.h \
 		SchemaRuleInfo.h \
@@ -29,6 +30,7 @@ LIB_HDR_FILES	= \
 		ConfigLex.h \
 		SchemaTypeBoolean.h \
 		SchemaTypeDummy.h \
+		SchemaTypeDurationMicroseconds.h \
 		SchemaTypeDurationMilliseconds.h \
 		SchemaTypeDurationSeconds.h \
 		SchemaTypeEnum.h \
@@ -57,6 +59,7 @@ LIB_OBJ_FILES	= \
 		platform.obj \
 		util.obj \
 		Configuration.obj \
+		AsciiPatternMatch.obj \
 		DefaultSecurity.obj \
 		DefaultSecurityConfiguration.obj \
 		ConfigurationException.obj \
@@ -73,6 +76,7 @@ LIB_OBJ_FILES	= \
 		StringVector.obj \
 		SchemaType.obj \
 		SchemaTypeBoolean.obj \
+		SchemaTypeDurationMicroseconds.obj \
 		SchemaTypeDurationMilliseconds.obj \
 		SchemaTypeDurationSeconds.obj \
 		SchemaTypeEnum.obj \

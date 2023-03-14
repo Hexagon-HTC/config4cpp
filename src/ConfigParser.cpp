@@ -25,56 +25,57 @@
 //
 // BNF of config file
 // ------------------
-// Note:	"|" denotes choice
-//		"{ ... }*" denotes repetition 0+ times
-//		"[ ... ]" denotes 0 or 1 times
+// Note: "|" denotes choice
+//       "{ ... }*" denotes repetition 0+ times
+//       "[ ... ]" denotes 0 or 1 times
+//       "( ... )" denotes grouping
 //
-//	configFile	= StmtList
-//	StmtList	= { Stmt }*
+//  configFile = StmtList
+//  StmtList   = { Stmt }*
 //
-//	Stmt		= ident_sym [ '=' | '?=' ] StringExpr ';'
-//			| ident_sym [ '=' | '?=' ] ListExpr ';'
-//			| ident_sym '{' StmtList '}' [ ';' ]
-//			| '@include' StringExpr [ '@ifExists' ] ';'
-//			| '@copyFrom' ident_sym [ '@ifExists' ] ';'
-//			| '@remove' ident_sym ';'
-//			| '@error' StringExpr ';'
-//			| '@if' '(' Condition ')' '{' StmtList '}'
-//			  { '@elseIf' '(' Condition ')' '{' StmtList '}' }*
-//			  [ '@else' '{' StmtList '}' ]
-//			  [ ';' ]
+//  Stmt = ident_sym ( '=' | '?=' | '+=' ) StringExpr ';'
+//       | ident_sym ( '=' | '?=' | '+=' ) ListExpr ';'
+//       | ident_sym '{' StmtList '}' [ ';' ]
+//       | '@include' StringExpr [ '@ifExists' ] ';'
+//       | '@copyFrom' ident_sym [ '@ifExists' ] ';'
+//       | '@remove' ident_sym ';'
+//       | '@error' StringExpr ';'
+//       | '@if' '(' Condition ')' '{' StmtList '}'
+//         { '@elseIf' '(' Condition ')' '{' StmtList '}' }*
+//         [ '@else' '{' StmtList '}' ]
+//         [ ';' ]
 //
-//	StringExpr	= String { '+' String }*
+//  StringExpr = String { '+' String }*
 //
-//	String		= string_sym
-//			| ident_sym
-//			| 'osType(' ')'
-//			| 'osDirSeparator(' ')'
-//			| 'osPathSeparator(' ')'
-//			| 'getenv('  StringExpr [ ',' StringExpr ] ')'
-//			| 'exec(' StringExpr [ ',' StringExpr ] ')'
-// 			| 'join(' ListExpr ',' StringExpr ')'
-// 			| 'siblingScope(' StringExpr ')'
+//  String = string_sym
+//         | ident_sym
+//         | 'osType(' ')'
+//         | 'osDirSeparator(' ')'
+//         | 'osPathSeparator(' ')'
+//         | 'getenv('  StringExpr [ ',' StringExpr ] ')'
+//         | 'exec(' StringExpr [ ',' StringExpr ] ')'
+//         | 'join(' ListExpr ',' StringExpr ')'
+//         | 'siblingScope(' StringExpr ')'
 //
 //
-//	ListExpr	= List { '+' List }*
-//	List		= '[' StringExprList [ ',' ] ']'
-//			| ident_sym
-// 			| 'split(' StringExpr ',' StringExpr ')'
+//  ListExpr = List { '+' List }*
+//  List     = '[' StringExprList [ ',' ] ']'
+//           | ident_sym
+//           | 'split(' StringExpr ',' StringExpr ')'
 //
-//	StringExprList = empty
-//			| StringExpr { ',' StringExpr }*
+// StringExprList = empty
+//                | StringExpr { ',' StringExpr }*
 //
-//	Condition	= OrCondition
-//	OrCondition	= AndCondition { '||' AndCondition }*
-//	AndCondition	= TermCondition { '&&' TermCondition }*
-//	TermCondition	= '(' Condition ')'
-//			| '!' '(' Condition ')'
-//			| 'isFileReadable(' StringExpr ')'
-//			| StringExpr '==' StringExpr
-//			| StringExpr '!=' StringExpr
-//			| StringExpr '@in' ListExpr
-//			| StringExpr '@matches' StringExpr
+//  Condition     = OrCondition
+//  OrCondition   = AndCondition { '||' AndCondition }*
+//  AndCondition  = TermCondition { '&&' TermCondition }*
+//  TermCondition = '(' Condition ')'
+//                | '!' '(' Condition ')'
+//                | 'isFileReadable(' StringExpr ')'
+//                | StringExpr '==' StringExpr
+//                | StringExpr '!=' StringExpr
+//                | StringExpr '@in' ListExpr
+//                | StringExpr '@matches' StringExpr
 //----------------------------------------------------------------------
 
 //--------
@@ -113,7 +114,6 @@ ConfigParser::ConfigParser(
 	const char *				sourceDescription,
 	ConfigurationImpl *			config,
 	bool						ifExistsIsSpecified)
-												throw(ConfigurationException)
 {
 	StringBuffer				msg;
 
@@ -242,7 +242,7 @@ ConfigParser::parseStmtList()
 //----------------------------------------------------------------------
 // Function:	parseStmt()
 //
-// Description:	Stmt =	  ident [ '=' | '?=' ] RhsAssignStmt ';'
+// Description:	Stmt =	  ident ( '=' | '?=' | '+=' ) RhsAssignStmt ';'
 //						| ident Scope [ ';' ]
 //						| '@include' StringExpr [ '@ifExists' ] ';'
 //						| '@copyFrom' ident_sym [ '@ifExists' ] ';'
@@ -283,6 +283,7 @@ ConfigParser::parseStmt()
 	switch(m_token.type()) {
 	case ConfigLex::LEX_EQUALS_SYM:
 	case ConfigLex::LEX_QUESTION_EQUALS_SYM:
+	case ConfigLex::LEX_PLUS_EQUALS_SYM:
 		assignmentType = m_token.type();
 		m_lex->nextToken(m_token);
 		parseRhsAssignStmt(identName, assignmentType);
@@ -298,7 +299,7 @@ ConfigParser::parseStmt()
 		}
 		break;
 	default:
-		error("expecting '=', '?=' or '{'"); // matching '}'
+		error("expecting '=', '?=', '+=' or '{'"); // matching '}'
 		return;
 	}
 }
@@ -706,7 +707,7 @@ ConfigParser::parseCopyStmt()
 	// then we short-circuit the rest of this function.
 	//--------
 	item = m_config->lookup(fromScopeName.c_str(),
-				fromScopeName.c_str(), true);
+				fromScopeName.c_str(), true, false);
 	if (item == 0 && ifExistsIsSpecified) {
 		accept(ConfigLex::LEX_SEMICOLON_SYM, "expecting ';'");
 		return;
@@ -735,7 +736,7 @@ ConfigParser::parseCopyStmt()
 	len = fromNamesVec.length();
 	for (i = 0; i < len; i++) {
 		newName = &fromNamesVec[i][fromScopeNameLen + 1];
-		item = m_config->lookup(fromNamesVec[i], fromNamesVec[i], true);
+		item = m_config->lookup(fromNamesVec[i], fromNamesVec[i], true, false);
 		assert(item != 0);
 		switch (item->type()) {
 		case Configuration::CFG_STRING:
@@ -860,12 +861,18 @@ ConfigParser::parseRhsAssignStmt(
 	short					assignmentType)
 {
 	StringBuffer			stringExpr;
+	StringBuffer			appendedStringExpr;
 	StringVector			listExpr;
+	StringVector			appendedListExpr;
 	Configuration::Type		varType;
+	Configuration::Type		exprType;
+	Configuration::Type		dummyType;
 	StringBuffer			msg;
+	const char * 			constStr;
 	bool					doAssign;
 
-	switch(m_config->type(varName.spelling(), "")) {
+	varType = m_config->type(varName.spelling(), "", false);
+	switch(varType) {
 	case Configuration::CFG_STRING:
 	case Configuration::CFG_LIST:
 		if (assignmentType == ConfigLex::LEX_QUESTION_EQUALS_SYM) {
@@ -875,6 +882,10 @@ ConfigParser::parseRhsAssignStmt(
 		}
 		break;
 	default:
+		if (assignmentType == ConfigLex::LEX_PLUS_EQUALS_SYM) {
+			msg << "variable '" << varName.spelling() << "' does not exist";
+			error(msg.c_str(), false);
+		}
 		doAssign = true;
 		break;
 	}
@@ -886,7 +897,7 @@ ConfigParser::parseRhsAssignStmt(
 	switch(m_token.type()) {
 	case ConfigLex::LEX_OPEN_BRACKET_SYM:
 	case ConfigLex::LEX_FUNC_SPLIT_SYM:
-		varType = Configuration::CFG_LIST;
+		exprType = Configuration::CFG_LIST;
 		break;
 	case ConfigLex::LEX_FUNC_SIBLING_SCOPE_SYM:
 	case ConfigLex::LEX_FUNC_GETENV_SYM:
@@ -901,7 +912,7 @@ ConfigParser::parseRhsAssignStmt(
 	case ConfigLex::LEX_FUNC_CONFIG_FILE_SYM:
 	case ConfigLex::LEX_FUNC_CONFIG_TYPE_SYM:
 	case ConfigLex::LEX_STRING_SYM:
-		varType = Configuration::CFG_STRING;
+		exprType = Configuration::CFG_STRING;
 		break;
 	case ConfigLex::LEX_IDENT_SYM:
 		//--------
@@ -912,10 +923,10 @@ ConfigParser::parseRhsAssignStmt(
 		//--------
 		switch (m_config->type(m_token.spelling(), "")) {
 		case Configuration::CFG_STRING:
-			varType = Configuration::CFG_STRING;
+			exprType = Configuration::CFG_STRING;
 			break;
 		case Configuration::CFG_LIST:
-			varType = Configuration::CFG_LIST;
+			exprType = Configuration::CFG_LIST;
 			break;
 		default:
 			msg << "identifier '" << m_token.spelling()
@@ -929,22 +940,49 @@ ConfigParser::parseRhsAssignStmt(
 		return;
 	}
 
+	if (assignmentType == ConfigLex::LEX_PLUS_EQUALS_SYM) {
+		if (varType != exprType) {
+			msg << "variable '" << varName.spelling() << "' must have the "
+				<< "same type as the assignment expression when using the "
+				<< "+= operator";
+			error(msg.c_str(), false);
+		}
+	}
+
 	//--------
 	// Now that we know the type of the input expression, we
 	// can parse it correctly.
 	//--------
-	switch(varType) {
+	switch(exprType) {
 		case Configuration::CFG_STRING:
 			parseStringExpr(stringExpr);
 			if (doAssign) {
-				m_config->insertString("", varName.spelling(),
-									   stringExpr.c_str());
+				if (assignmentType == ConfigLex::LEX_PLUS_EQUALS_SYM) {
+					m_config->stringValue(varName.spelling(),
+										  varName.spelling(),
+										  constStr,
+										  dummyType);
+					appendedStringExpr << constStr << stringExpr;
+					m_config->insertString("", varName.spelling(),
+										   appendedStringExpr.c_str());
+				} else {
+					m_config->insertString("", varName.spelling(),
+										   stringExpr.c_str());
+				}
 			}
 			break;
 		case Configuration::CFG_LIST:
 			parseListExpr(listExpr);
 			if (doAssign) {
-				m_config->insertList(varName.spelling(), listExpr);
+				if (assignmentType == ConfigLex::LEX_PLUS_EQUALS_SYM) {
+					m_config->listValue(varName.spelling(), varName.spelling(),
+										appendedListExpr,
+										dummyType);
+					appendedListExpr.add(listExpr);
+					m_config->insertList(varName.spelling(), appendedListExpr);
+				} else {
+					m_config->insertList(varName.spelling(), listExpr);
+				}
 			}
 			break;
 		default:
@@ -981,9 +1019,9 @@ ConfigParser::parseStringExpr(StringBuffer & expr)
 //
 // Description:	string	= string_sym
 //						| ident_sym
-//						| 'os.type(' ')'
-//						| 'dir.sep(' ')'
-//						| 'path.sep(' ')'
+//						| 'osType(' ')'
+//						| 'osDirSeparator(' ')'
+//						| 'osPathSeparator(' ')'
 //						| Env
 //						| Exec
 //						| Join
@@ -1049,7 +1087,7 @@ ConfigParser::parseString(StringBuffer & str)
 		m_lex->nextToken(m_token);
 		parseStringExpr(name);
 		accept(ConfigLex::LEX_CLOSE_PAREN_SYM, "expecting ')'");
-		item = m_config->lookup(name.c_str(), name.c_str());
+		item = m_config->lookup(name.c_str(), name.c_str(), false, true);
 		if (item == 0) {
 			type = Configuration::CFG_NO_VALUE;
 		} else {
@@ -1331,8 +1369,8 @@ ConfigParser::parseSplit(StringVector & list)
 //----------------------------------------------------------------------
 // Function:	parseExec()
 //
-// Description:	Exec	= 'os.exec(' StringExpr ')'
-//						| 'os.exec(' StringExpr ',' StringExpr ')'
+// Description:	Exec	= 'exec(' StringExpr ')'
+//						| 'exec(' StringExpr ',' StringExpr ')'
 //----------------------------------------------------------------------
 
 void
@@ -1348,7 +1386,7 @@ ConfigParser::parseExec(StringBuffer & str)
 	//--------
 	// Parse the command and default value, if any
 	//--------
-	accept(ConfigLex::LEX_FUNC_EXEC_SYM, "expecting 'os.exec('");
+	accept(ConfigLex::LEX_FUNC_EXEC_SYM, "expecting 'exec('");
 	parseStringExpr(cmd);
 	if (m_token.type() == ConfigLex::LEX_COMMA_SYM) {
 		accept(ConfigLex::LEX_COMMA_SYM, "expecting ','");
@@ -1371,7 +1409,7 @@ ConfigParser::parseExec(StringBuffer & str)
 	//--------
 	execStatus = execCmd(trustedCmdLine.c_str(), str);
 	if (!execStatus && !hasDefaultStr) {
-		msg << "os.exec(\"" << cmd << "\") failed: " << str;
+		msg << "exec(\"" << cmd << "\") failed: " << str;
 		throw ConfigurationException(msg.c_str());
 	} else if (!execStatus && hasDefaultStr) {
 		str = defaultStr;

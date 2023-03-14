@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// Copyright 2011 Ciaran McHale.
+// Copyright 2019 Ciaran McHale.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -22,42 +22,27 @@
 // SOFTWARE.
 //----------------------------------------------------------------------
 
-#ifndef CONFIG4CPP_SCHEMA_TYPE_MEMORY_SIZE_MB_H_
-#define CONFIG4CPP_SCHEMA_TYPE_MEMORY_SIZE_MB_H_
+#ifndef CONFIG4CPP_ASCIIPATTERNMATCH_H
+#define CONFIG4CPP_ASCIIPATTERNMATCH_H
 
-#include <config4cpp/SchemaType.h>
+
+#include <config4cpp/namespace.h>
+
 
 
 namespace CONFIG4CPP_NAMESPACE {
 
-class SchemaTypeMemorySizeMB
-	: public SchemaType
-{
-public:
-	SchemaTypeMemorySizeMB()
-		: SchemaType("memorySizeMB",
-		             CONFIG4CPP_NAMESPACE_STR "::SchemaTypeMemorySizeMB",
-		             Configuration::CFG_STRING)
-	{ }
-	virtual ~SchemaTypeMemorySizeMB() { }
 
-protected:
-	virtual void checkRule(
-		const SchemaValidator *	sv,
-		const Configuration *	cfg,
-		const char *			typeName,
-		const StringVector &	typeArgs,
-		const char *			rule) const;
 
-	virtual bool isA(
-		const SchemaValidator *	sv,
-		const Configuration *	cfg,
-		const char *			value,
-		const char *			typeName,
-		const StringVector &	typeArgs,
-		int						indentLevel,
-		StringBuffer &			errSuffix) const;
-};
+extern bool asciiPatternMatchInternal(
+	const char *	str,
+	int				strIndex,
+	int				strLen,
+	const char *	pattern,
+	int				patternIndex,
+	int				patternLen);
+
+
 
 }; // namespace CONFIG4CPP_NAMESPACE
 #endif

@@ -77,8 +77,7 @@ public:
 	ConfigLex(
 			Configuration::SourceType	sourceType,
 			const char *				source,
-			UidIdentifierProcessor *	uidIdentifierProcessor)
-												throw(ConfigurationException);
+			UidIdentifierProcessor *	uidIdentifierProcessor);
 	virtual ~ConfigLex();
 
 private:

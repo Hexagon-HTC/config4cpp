@@ -35,7 +35,7 @@ using CONFIG4CPP_NAMESPACE::SchemaValidator;
 class ExtendedSchemaValidator : public SchemaValidator
 {
 public:
-	ExtendedSchemaValidator() throw(ConfigurationException)
+	ExtendedSchemaValidator()
 	{
 		registerType(new SchemaTypeHex());
 	}

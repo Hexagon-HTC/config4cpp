@@ -89,7 +89,7 @@ FooConfiguration::~FooConfiguration()
 void
 FooConfiguration::parse(
 	const char *		cfgSource,
-	const char *		scope) throw (FooConfigurationException)
+	const char *		scope)
 {
 	Configuration * cfg = (Configuration *)m_cfg;
 
@@ -110,7 +110,6 @@ FooConfiguration::parse(
 
 const char *
 FooConfiguration::lookupString(const char * name) const
-											throw (FooConfigurationException)
 {
 	Configuration * cfg = (Configuration *)m_cfg;
 	try {
@@ -126,7 +125,7 @@ void
 FooConfiguration::lookupList(
 	const char *			name,
 	const char **&			array,
-	int &					arraySize) const throw (FooConfigurationException)
+	int &					arraySize) const
 {
 	Configuration * cfg = (Configuration *)m_cfg;
 	try {
@@ -140,7 +139,6 @@ FooConfiguration::lookupList(
 
 int
 FooConfiguration::lookupInt(const char * name) const
-											throw (FooConfigurationException)
 {
 	Configuration * cfg = (Configuration *)m_cfg;
 	try {
@@ -154,7 +152,6 @@ FooConfiguration::lookupInt(const char * name) const
 
 float
 FooConfiguration::lookupFloat(const char * name) const
-											throw (FooConfigurationException)
 {
 	Configuration * cfg = (Configuration *)m_cfg;
 	try {
@@ -168,7 +165,6 @@ FooConfiguration::lookupFloat(const char * name) const
 
 bool
 FooConfiguration::lookupBoolean(const char * name) const
-											throw (FooConfigurationException)
 {
 	Configuration * cfg = (Configuration *)m_cfg;
 	try {
@@ -182,7 +178,6 @@ FooConfiguration::lookupBoolean(const char * name) const
 
 int
 FooConfiguration::lookupDurationMilliseconds(const char * name) const
-											throw (FooConfigurationException)
 {
 	Configuration * cfg = (Configuration *)m_cfg;
 	try {
@@ -196,7 +191,6 @@ FooConfiguration::lookupDurationMilliseconds(const char * name) const
 
 int
 FooConfiguration::lookupDurationSeconds(const char * name) const
-											throw (FooConfigurationException)
 {
 	Configuration * cfg = (Configuration *)m_cfg;
 	try {

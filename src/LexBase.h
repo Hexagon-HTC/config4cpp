@@ -67,30 +67,31 @@ public:
 			LEX_SEMICOLON_SYM             =  2,
 			LEX_PLUS_SYM                  =  3,
 			LEX_QUESTION_EQUALS_SYM       =  4,
-			LEX_EQUALS_SYM                =  5,
-			LEX_EQUALS_EQUALS_SYM         =  6,
-			LEX_NOT_EQUALS_SYM            =  7,
-			LEX_STRING_SYM                =  8,
-			LEX_COMMA_SYM                 =  9,
-			LEX_AND_SYM                   = 10,
-			LEX_OR_SYM                    = 11,
-			LEX_NOT_SYM                   = 12,
-			LEX_AT_SYM                    = 13,
-			LEX_OPEN_BRACKET_SYM          = 14,
-			LEX_CLOSE_BRACKET_SYM         = 15,
-			LEX_OPEN_BRACE_SYM            = 16,
-			LEX_CLOSE_BRACE_SYM           = 17,
-			LEX_OPEN_PAREN_SYM            = 18,
-			LEX_CLOSE_PAREN_SYM           = 19,
-			LEX_EOF_SYM                   = 20,
-			LEX_UNKNOWN_SYM               = 21,
-			LEX_UNKNOWN_FUNC_SYM          = 22,
-			LEX_IDENT_TOO_LONG_SYM        = 23,
-			LEX_STRING_WITH_EOL_SYM       = 24,
-			LEX_ILLEGAL_IDENT_SYM         = 25,
-			LEX_TWO_DOTS_IDENT_SYM        = 26,
-			LEX_BLOCK_STRING_WITH_EOF_SYM = 27,
-			LEX_SOLE_DOT_IDENT_SYM        = 28,
+			LEX_PLUS_EQUALS_SYM           =  5,
+			LEX_EQUALS_SYM                =  6,
+			LEX_EQUALS_EQUALS_SYM         =  7,
+			LEX_NOT_EQUALS_SYM            =  8,
+			LEX_STRING_SYM                =  9,
+			LEX_COMMA_SYM                 = 10,
+			LEX_AND_SYM                   = 11,
+			LEX_OR_SYM                    = 12,
+			LEX_NOT_SYM                   = 13,
+			LEX_AT_SYM                    = 14,
+			LEX_OPEN_BRACKET_SYM          = 15,
+			LEX_CLOSE_BRACKET_SYM         = 16,
+			LEX_OPEN_BRACE_SYM            = 17,
+			LEX_CLOSE_BRACE_SYM           = 18,
+			LEX_OPEN_PAREN_SYM            = 19,
+			LEX_CLOSE_PAREN_SYM           = 20,
+			LEX_EOF_SYM                   = 21,
+			LEX_UNKNOWN_SYM               = 22,
+			LEX_UNKNOWN_FUNC_SYM          = 23,
+			LEX_IDENT_TOO_LONG_SYM        = 24,
+			LEX_STRING_WITH_EOL_SYM       = 25,
+			LEX_ILLEGAL_IDENT_SYM         = 26,
+			LEX_TWO_DOTS_IDENT_SYM        = 27,
+			LEX_BLOCK_STRING_WITH_EOF_SYM = 28,
+			LEX_SOLE_DOT_IDENT_SYM        = 29,
 	};
 
 	struct KeywordInfo {
@@ -110,9 +111,8 @@ protected:
 	LexBase(
 		Configuration::SourceType     sourceType,
 		const char *			      source,
-		UidIdentifierProcessor *      uidIdentifierProcessor)
-												throw(ConfigurationException);
-	LexBase(const char * str) throw(ConfigurationException);
+		UidIdentifierProcessor *      uidIdentifierProcessor);
+	LexBase(const char * str);
 	virtual ~LexBase();
 
 	//--------
@@ -140,7 +140,7 @@ private:
 			short &			funcType,
 			short &			symbol);
 
-	void nextChar() throw(ConfigurationException);
+	void nextChar();
 	char nextByte();
 	void consumeString(LexToken & token);
 	void consumeBlockString(LexToken &token);

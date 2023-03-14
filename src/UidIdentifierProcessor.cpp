@@ -60,7 +60,6 @@ UidIdentifierProcessor::~UidIdentifierProcessor()
 
 void
 UidIdentifierProcessor::expand(StringBuffer & spelling)
-												throw (ConfigurationException)
 {
 	//--------
 	// Common case optimizations
@@ -106,7 +105,6 @@ UidIdentifierProcessor::expand(StringBuffer & spelling)
 
 void
 UidIdentifierProcessor::expandOne(StringBuffer & spelling)
-												throw (ConfigurationException)
 {
 	int					count;
 	const char *		ptr;
@@ -186,7 +184,7 @@ UidIdentifierProcessor::expandOne(StringBuffer & spelling)
 const char *
 UidIdentifierProcessor::unexpand(
 	const char *			spelling,
-	StringBuffer &			buf) const throw (ConfigurationException)
+	StringBuffer &			buf) const
 {
 	//--------
 	// Common case optimizations
@@ -232,7 +230,7 @@ UidIdentifierProcessor::unexpand(
 const char *
 UidIdentifierProcessor::unexpandOne(
 	const char *			spelling,
-	StringBuffer &			buf) const throw (ConfigurationException)
+	StringBuffer &			buf) const
 {
 	int						count;
 	const char *			ptr;

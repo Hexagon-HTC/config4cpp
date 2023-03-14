@@ -206,23 +206,37 @@ SchemaValidator::SchemaValidator()
 
 SchemaValidator::~SchemaValidator()
 {
+	reset(true);
+}
+
+
+void
+SchemaValidator::reset(bool inDelete)
+{
 	int				i;
 
 	for (i = 0; i < m_idRulesCurrSize; i++) {
 		delete m_idRules[i];
 	}
 	delete [] m_idRules;
+	m_idRules         = 0;
+	m_idRulesCurrSize = 0;
+	m_idRulesMaxSize  = 0;
 
 	for (i = 0; i < m_ignoreRulesCurrSize; i++) {
 		delete m_ignoreRules[i];
 	}
 	delete [] m_ignoreRules;
+	m_ignoreRules         = 0;
+	m_ignoreRulesCurrSize = 0;
+	m_ignoreRulesMaxSize  = 0;
 
-	for (i = 0; i < m_typesCurrSize; i++) {
-		delete m_types[i];
+	if (inDelete) {
+		for (i = 0; i < m_typesCurrSize; i++) {
+			delete m_types[i];
+		}
+		delete [] m_types;
 	}
-
-	delete [] m_types;
 }
 
 
@@ -262,7 +276,7 @@ SchemaValidator::registerBuiltinTypes()
 
 
 void
-SchemaValidator::registerType(SchemaType * type) throw(ConfigurationException)
+SchemaValidator::registerType(SchemaType * type)
 {
 	checkTypeDoesNotExist(type->typeName());
 	ensureSpaceInTypesArray();
@@ -278,7 +292,7 @@ SchemaValidator::registerTypedef(
 	const char *				typeName,
 	Configuration::Type			cfgType,
 	const char *				baseTypeName,
-	const StringVector &		baseTypeArgs) throw(ConfigurationException)
+	const StringVector &		baseTypeArgs)
 {
 	checkTypeDoesNotExist(typeName);
 	ensureSpaceInTypesArray();
@@ -327,7 +341,6 @@ SchemaValidator::ensureSpaceInTypesArray()
 
 void
 SchemaValidator::parseSchema(const char ** nullTerminatedRulesArray)
-												throw(ConfigurationException)
 {
 	int				size;
 
@@ -341,12 +354,13 @@ SchemaValidator::parseSchema(const char ** nullTerminatedRulesArray)
 void
 SchemaValidator::parseSchema(
 	const char **		schema,
-	int					schemaSize) throw(ConfigurationException)
+	int					schemaSize)
 {
 	SchemaParser		schemaParser(this);
 	const char *		prefix = "---- " CONFIG4CPP_NAMESPACE_STR
 								 "::SchemaValidator::parseSchema()";
 
+	reset(false);
 	if (m_wantDiagnostics) {
 		printf("\n%s: start\n", prefix);
 	}
@@ -373,7 +387,6 @@ SchemaValidator::validate(
 	bool						recurseIntoSubscopes,
 	Configuration::Type			typeMask,
 	ForceMode					forceMode) const
-												throw(ConfigurationException)
 {
 	StringBuffer				fullyScopedName;
 	StringVector				itemNames;
@@ -399,7 +412,7 @@ SchemaValidator::validate(
 	const char *			scope,
 	const char *			localName,
 	const StringVector &	itemNames,
-	ForceMode				forceMode) const throw(ConfigurationException)
+	ForceMode				forceMode) const
 {
 	StringBuffer			fullyScopedName;
 	StringBuffer			unlistedName;
@@ -492,7 +505,7 @@ SchemaValidator::validateForceMode(
 	const Configuration *	cfg,
 	const char *			scope,
 	const char *			localName,
-	ForceMode				forceMode) const throw(ConfigurationException)
+	ForceMode				forceMode) const
 {
 	int						i;
 	bool					isOptional;
@@ -539,7 +552,7 @@ void
 SchemaValidator::validateRequiredUidEntry(
 	const Configuration *	cfg,
 	const char *			fullScope,
-	SchemaIdRuleInfo *		idRule) const throw(ConfigurationException)
+	SchemaIdRuleInfo *		idRule) const
 {
 	const char *			nameInRule;
 	const char *			lastDot;

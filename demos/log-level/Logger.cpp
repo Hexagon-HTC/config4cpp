@@ -29,7 +29,7 @@
 //--------
 // Singleton object
 //--------
-Logger log;
+Logger logger;
 
 
 

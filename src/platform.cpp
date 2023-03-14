@@ -63,7 +63,6 @@ execCmd(const char * cmd, StringBuffer & output)
 	// shell.
 	//--------
 	modifiedCmd << cmd << " 2>&1";
-	//modifiedCmd << cmd;
 	pipe = CONFIG4CPP_POPEN(modifiedCmd.c_str(), "r");
 	if (!pipe) {
 		output << "cannot execute '" << cmd << "': popen() failed";

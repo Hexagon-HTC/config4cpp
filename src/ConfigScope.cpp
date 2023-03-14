@@ -589,16 +589,16 @@ ConfigScope::dump(
 int
 ConfigScope::hash(const char *name) const
 {
-	int				result;
+	unsigned int	result;
 	const char *	p;
 
-	result = 0;
+	result = 5381;
 	for (p = name; *p != '\0'; p++) {
-		result += (*p);
+		result = ((result << 5) + result) + (unsigned int)(*p);
 	}
 	result = result % m_tableSize;
 
-	return result;
+	return (int)result;
 }
 
 

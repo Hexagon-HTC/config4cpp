@@ -25,30 +25,59 @@
 //
 // BNF of config file
 // ------------------
-// Note:	"|" denotes choice
-//		"{ ... }*" denotes repetition 0+ times
+// Note: "|" denotes choice
+//       "{ ... }*" denotes repetition 0+ times
+//       "[ ... ]" denotes 0 or 1 times
+//       "( ... )" denotes grouping
 //
-//	configFile	= StmtList
-//	StmtList	= { Stmt }*
-//	Stmt		= ident_sym '=' RhsAssignStmt ';'
-//			| ident_sym Scope ';'
-//			| 'include' StringExpr [ 'if' 'exists' ] ';'
-//			| 'copy' 'from' ident_sym [ 'if' 'exists' ] ';'
-//	Scope		= '{' StmtList '}'
-//	RhsAssignStmt	= StringExpr
-//			| ListExpr
-//	StringExpr	= String { '+' String }*
-//	String		= string_sym
-//			| ident_sym
-//			| Env
-//	Env		= '$(' ident_sym ')'
-//			| '$(' ident_sym ',' StringExpr ')'
-//	ListExpr	= List { '+' List }*
-//	List		= '[' StringExprList ']'
-//			| ident_sym
-//	StringExprList = empty
-//			| StringExpr { ',' StringExpr }*
+//  configFile = StmtList
+//  StmtList   = { Stmt }*
+//
+//  Stmt = ident_sym ( '=' | '?=' | '+=' ) StringExpr ';'
+//       | ident_sym ( '=' | '?=' | '+=' ) ListExpr ';'
+//       | ident_sym '{' StmtList '}' [ ';' ]
+//       | '@include' StringExpr [ '@ifExists' ] ';'
+//       | '@copyFrom' ident_sym [ '@ifExists' ] ';'
+//       | '@remove' ident_sym ';'
+//       | '@error' StringExpr ';'
+//       | '@if' '(' Condition ')' '{' StmtList '}'
+//         { '@elseIf' '(' Condition ')' '{' StmtList '}' }*
+//         [ '@else' '{' StmtList '}' ]
+//         [ ';' ]
+//
+//  StringExpr = String { '+' String }*
+//
+//  String = string_sym
+//         | ident_sym
+//         | 'osType(' ')'
+//         | 'osDirSeparator(' ')'
+//         | 'osPathSeparator(' ')'
+//         | 'getenv('  StringExpr [ ',' StringExpr ] ')'
+//         | 'exec(' StringExpr [ ',' StringExpr ] ')'
+//         | 'join(' ListExpr ',' StringExpr ')'
+//         | 'siblingScope(' StringExpr ')'
+//
+//
+//  ListExpr = List { '+' List }*
+//  List     = '[' StringExprList [ ',' ] ']'
+//           | ident_sym
+//           | 'split(' StringExpr ',' StringExpr ')'
+//
+// StringExprList = empty
+//                | StringExpr { ',' StringExpr }*
+//
+//  Condition     = OrCondition
+//  OrCondition   = AndCondition { '||' AndCondition }*
+//  AndCondition  = TermCondition { '&&' TermCondition }*
+//  TermCondition = '(' Condition ')'
+//                | '!' '(' Condition ')'
+//                | 'isFileReadable(' StringExpr ')'
+//                | StringExpr '==' StringExpr
+//                | StringExpr '!=' StringExpr
+//                | StringExpr '@in' ListExpr
+//                | StringExpr '@matches' StringExpr
 //----------------------------------------------------------------------
+
 
 #ifndef CONFIG4CPP_CONFIG_PARSER_H_
 #define CONFIG4CPP_CONFIG_PARSER_H_
@@ -75,8 +104,7 @@ public:
 		const char *				trustedCmdLine,
 		const char *				sourceDescription,
 		ConfigurationImpl *			config,
-		bool						ifExistsIsSpecified = false)
-												throw(ConfigurationException);
+		bool						ifExistsIsSpecified = false);
 	~ConfigParser();
 
 	//--------

@@ -49,7 +49,10 @@ StringVector::StringVector(int initialCapacity)
 {
 	int				i;
 
-	assert(initialCapacity > 0);
+	assert(initialCapacity >= 0);
+	if (initialCapacity == 0) {
+		initialCapacity = 10;
+	}
 	m_currSize = 0;
 	m_maxSize  = initialCapacity;
 	m_array    = new char *[m_maxSize + 1];

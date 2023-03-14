@@ -149,18 +149,6 @@ StringBuffer::append(float val)
 
 
 StringBuffer &
-StringBuffer::append(char ch)
-{
-	growIfNeeded(1);
-	m_buf[m_currSize-1] = ch;
-	m_buf[m_currSize] = '\0';
-	m_currSize++;
-	return *this;
-}
-
-
-
-StringBuffer &
 StringBuffer::operator=(const char * str)
 {
 	m_buf[0]   = '\0';
